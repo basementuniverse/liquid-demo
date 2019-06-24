@@ -5,6 +5,7 @@ _Note: doesn't seem to work on mobile, possibly because of ES6? Babel would prob
 
 ## Parameters
 
+```
 GRID_SIZE = 10; // will generate a grid of n*n triangles
                 // the grid is scaled according to max(width, height), so the grid will always fill the canvas
 GRID_BUFFER = 2;  // amount of buffer area off each edge of the screen, otherwise we would get gaps at the edge
@@ -25,3 +26,4 @@ WAVE_AMOUNT = 0.5;  // the waveforms move triangle vertices towards/away from th
 MOUSE_AMOUNT = 0.7; // clicking/dragging with the mouse moves the triangle vertices toward/away from the camera by this much
 FREQUENCY = 2;  // maximum wave frequency
 PHASE = 5;  // maximum wave phase offset
+```
