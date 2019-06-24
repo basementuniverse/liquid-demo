@@ -1,0 +1,27 @@
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100%;
+    background-color: #2f4050;
+}
+
+canvas {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+</style>
+<canvas></canvas>
+<script src="delaunator.min.js"></script>
+<script src="liquid.js"></script>
+<script>
+
+liquid(document.querySelector('canvas'));
+
+</script>
