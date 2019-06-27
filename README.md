@@ -1,7 +1,15 @@
 # liquid-demo
-An ambient header background animation
+An ambient header background animation.
 
-_Note: doesn't seem to work on mobile, possibly because of ES6? Babel would probably solve this..._
+See https://liquidcrm.uk for a live demo.
+
+## How it works
+
+First, we generate a randomised grid of 2d points. We perform a Delaunay triangulation on these points, then each point is given a z-coordinate. We now have a mesh in 3d-space made up of slightly-randomised triangles.
+
+Each vertex has a velocity and we use this to do a basic spring simulation, where each vertex also responds to neighbouring vertices. There is a random waveform generator that perturbs the vertices towards/away from the camera. Mouse input is also used to perturb the vertices.
+
+We compare the surface normal of each triangle with a light direction to calculate how that triangle should be shaded.
 
 ## Parameters
 
@@ -26,4 +34,24 @@ WAVE_AMOUNT = 0.5;  // the waveforms move triangle vertices towards/away from th
 MOUSE_AMOUNT = 0.7; // clicking/dragging with the mouse moves the triangle vertices toward/away from the camera by this much
 FREQUENCY = 2;  // maximum wave frequency
 PHASE = 5;  // maximum wave phase offset
+```
+
+## Notes
+
+To get this working on mobile devices, use Babel to convert it for es2015. Also, to support touch events, include a library like Hammer.JS and replace the mouse input code (lines ~34...43) with the following:
+
+```
+const hammer = new Hammer.Manager(canvas, { recognizers: [
+    [Hammer.Pan]
+] });
+const mouse = {
+    position: [0, 0],
+    down: false
+};
+hammer.on('panstart', () => { mouse.down = true; });
+hammer.on('panend', () => { mouse.down = false; });
+hammer.on('pan', e => {
+    mouse.position[X] = e.center.x;
+    mouse.position[Y] = e.center.y;
+});
 ```
