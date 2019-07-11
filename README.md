@@ -55,3 +55,5 @@ hammer.on('pan', e => {
     mouse.position[Y] = e.center.y;
 });
 ```
+
+_Note: I have added hammer input and a minified/babel-compiled version (liquid.min.js). Enjoy :)_
