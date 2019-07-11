@@ -16,7 +16,7 @@ const liquid = canvas => {
     const FRICTION = 0.999;
     const WAVE_COUNT = 20;
     const WAVE_AMOUNT = 0.5;
-    const MOUSE_AMOUNT = 0.7;
+    const MOUSE_AMOUNT = 1.1;
     const FREQUENCY = 2;
     const PHASE = 5;
 
@@ -31,16 +31,19 @@ const liquid = canvas => {
     let elapsedTime = 0;
 
     // Handle mouse input
+    const hammer = new Hammer.Manager(canvas, { recognizers: [
+        [Hammer.Pan]
+    ] });
     const mouse = {
         position: [0, 0],
         down: false
     };
-    canvas.onmousedown  = () => { mouse.down = true; };
-    canvas.onmouseup    = () => { mouse.down = false; };
-    canvas.onmousemove  = e => {
-        mouse.position[X] = e.offsetX;
-        mouse.position[Y] = e.offsetY;
-    };
+    hammer.on('panstart', () => { mouse.down = true; });
+    hammer.on('panend', () => { mouse.down = false; });
+    hammer.on('pan', e => {
+        mouse.position[X] = e.center.x;
+        mouse.position[Y] = e.center.y;
+    });
 
     // Handle window resize
     function resize() {
@@ -53,12 +56,14 @@ const liquid = canvas => {
 
     // Wave generator
     class WaveGenerator {
-        n = 0;
-        wavesX = [];
-        wavesY = [];
+        // n = 0;
+        // wavesX = [];
+        // wavesY = [];
         
         constructor(n) {
             this.n = n;
+            this.wavesX = [];
+            this.wavesY = [];
             for (let i = 0; i < n; i++) {
                 this.wavesX.push({
                     frequency: (Math.random() * 2 - 1) * FREQUENCY,
@@ -113,7 +118,13 @@ const liquid = canvas => {
         if (mouse.down) {
             const gx = Math.floor(mouse.position[X] / cellSize) + GRID_BUFFER;
             const gy = Math.floor(mouse.position[Y] / cellSize) + GRID_BUFFER;
-            points[index(gx, gy)][Z] += MOUSE_AMOUNT;
+            const p = points[index(gx, gy)];
+            const m = [
+                mouse.position[X] / cellSize + GRID_BUFFER,
+                mouse.position[Y] / cellSize + GRID_BUFFER
+            ];
+            const d = clamp(1 - len(sub([m[X], m[Y], 0], [p[X], p[Y], 0])), 0, 1);
+            p[Z] += MOUSE_AMOUNT * d;
         }
     }
 
@@ -195,6 +206,11 @@ const liquid = canvas => {
             // Render the triangle
             drawTriangle(context, p1, p2, p3, colour);
         }
+
+        // context.fillStyle = 'white';
+        // for (let i = 0; i < points.length; i++) {
+        //     context.fillRect(points[i][X], points[i][Y], 1 / cellSize, 1 / cellSize);
+        // }
 
         context.restore();
     }
@@ -283,6 +299,11 @@ const liquid = canvas => {
     // Linear interpolation from a to b
     function lerp(a, b, i) {
         return (1 - i) * a + i * b;
+    }
+
+    // Clamp a value between min and max
+    function clamp(a, min, max) {
+        return Math.min(Math.max(a, min), max);
     }
 
     // Generate an rgb colour string from values
